@@ -1,5 +1,6 @@
 {
     "version": "1.0.2",
     "download_url": "https://github.com/tianzhenyang1/patient_info/releases/download/v1.0.2/patient_info.exe",
-    "description": "1. 更新程序图标\n2. 优化界面显示"
-}
+    "description": "1. 更新程序图标\n2. 优化界面显示\n3. 添加强制更新功能",
+    "force_update": true
+} 

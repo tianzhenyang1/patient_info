@@ -56,9 +56,16 @@ class PatientInfoApp:
 最新版本：{update_info['version']}
 更新内容：{update_info.get('description', '无')}
 
-是否现在更新？"""
-            if messagebox.askyesno("软件更新", msg):
-                self.perform_update(update_info)
+{'此更新为强制更新，您必须更新后才能继续使用。' if update_info.get('force_update') else '是否现在更新？'}"""
+            
+            if update_info.get('force_update'):
+                if messagebox.showwarning("强制更新", msg):
+                    self.perform_update(update_info)
+                else:
+                    self.root.quit()  # 如果用户取消，直接退出程序
+            else:
+                if messagebox.askyesno("软件更新", msg):
+                    self.perform_update(update_info)
 
     def perform_update(self, update_info):
         """执行更新操作"""
