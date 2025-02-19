@@ -1,6 +1,6 @@
-__pycache__/ 
-backup/ 
-build/ 
-dist/ 
-dist/ 
-README.md 
+__pycache__/
+backup/
+build/
+dist/
+*.spec
+README.md
