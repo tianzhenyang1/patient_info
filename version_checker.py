@@ -7,7 +7,7 @@ import subprocess
 
 class UpdateChecker:
     def __init__(self):
-        self.current_version = "1.0.2"  # 当前版本号
+        self.current_version = "1.0.3"  # 当前版本号
         self.update_url = "https://raw.githubusercontent.com/tianzhenyang1/patient_info/main/version.json"
         self.download_url = "https://github.com/tianzhenyang1/patient_info/releases/download/"
         self.force_update = True  # 添加强制更新标志
