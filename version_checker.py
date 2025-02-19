@@ -7,9 +7,7 @@ import subprocess
 
 class UpdateChecker:
     def __init__(self):
-        # 删除这行注释掉的旧版本号
-        # self.current_version = "1.0.0"  # 当前版本号
-        self.current_version = "1.0.2"  # 从1.0.1更新到1.0.2
+        self.current_version = "1.0.2"  # 当前版本号
         self.update_url = "https://raw.githubusercontent.com/tianzhenyang1/patient_info/main/version.json"
         self.download_url = "https://github.com/tianzhenyang1/patient_info/releases/download/"
 
