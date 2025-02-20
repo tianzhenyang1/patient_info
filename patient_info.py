@@ -58,11 +58,30 @@ class PatientInfoApp:
         # 创建输入框和标签
         self.create_widgets()
         
-        # 在界面加载完成后检查更新
-        self.root.after(1000, self.check_for_updates)  # 延迟1秒检查更新
+        # 只在启动时检查强制更新
+        self.root.after(1000, self.check_force_update)
+
+    def check_force_update(self):
+        """只检查强制更新"""
+        update_info = self.update_checker.check_for_updates()
+        if update_info and update_info.get('force_update'):
+            msg = f"""发现重要更新！
+当前版本：{self.update_checker.current_version}
+最新版本：{update_info['version']}
+更新内容：{update_info.get('description', '无')}
+
+此更新包含重要更新，建议立即更新。"""
+            
+            if messagebox.showwarning("重要更新", msg):
+                self.perform_update(update_info)
+            else:
+                if messagebox.askokcancel("继续使用", "继续使用旧版本可能导致部分功能不可用，确定要继续吗？"):
+                    pass
+                else:
+                    self.root.quit()
 
     def check_for_updates(self):
-        """检查软件更新"""
+        """手动检查更新（包括非强制更新）"""
         # 禁用更新按钮，避免重复点击
         if hasattr(self, 'update_btn'):
             self.update_btn.config(state='disabled')
@@ -76,23 +95,12 @@ class PatientInfoApp:
 最新版本：{update_info['version']}
 更新内容：{update_info.get('description', '无')}
 
-{'此更新包含重要更新，建议立即更新。' if update_info.get('force_update') else '是否现在更新？'}"""
+是否现在更新？"""
                 
-                if update_info.get('force_update'):
-                    if messagebox.showwarning("重要更新", msg):
-                        self.perform_update(update_info)
-                    else:
-                        if messagebox.askokcancel("继续使用", "继续使用旧版本可能导致部分功能不可用，确定要继续吗？"):
-                            pass
-                        else:
-                            self.root.quit()
-                else:
-                    if messagebox.askyesno("软件更新", msg):
-                        self.perform_update(update_info)
+                if messagebox.askyesno("软件更新", msg):
+                    self.perform_update(update_info)
             else:
-                # 只在手动检查时显示"已是最新版本"
-                if hasattr(self, 'update_btn'):
-                    messagebox.showinfo("检查更新", "当前已是最新版本")
+                messagebox.showinfo("检查更新", "当前已是最新版本")
         finally:
             # 恢复更新按钮状态
             if hasattr(self, 'update_btn'):
