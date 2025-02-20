@@ -12,12 +12,16 @@ import subprocess
 class PatientInfoApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("卡威尔问诊信息整理系统")
+        
+        # 先初始化更新检查器
+        self.update_checker = UpdateChecker()
+        
+        # 然后设置标题（包含版本号）
+        self.root.title(f"卡威尔问诊信息整理系统 V{self.update_checker.current_version}")
         self.root.geometry("500x750")
         
         # 添加图标设置
         try:
-            # 设置窗口图标
             icon_path = 'app.ico'
             if os.path.exists(icon_path):
                 self.root.iconbitmap(icon_path)
@@ -26,13 +30,7 @@ class PatientInfoApp:
             elif os.path.exists('icons/healthcare.ico'):
                 self.root.iconbitmap('icons/healthcare.ico')
         except Exception as e:
-            print(f"设置图标时出错: {str(e)}")  # 添加错误信息输出
-
-        # 初始化更新检查器
-        self.update_checker = UpdateChecker()
-        
-        # 检查更新
-        self.check_for_updates()
+            print(f"设置图标时出错: {str(e)}")
 
         # 定义关键字映射
         self.field_keywords = {
@@ -59,26 +57,47 @@ class PatientInfoApp:
 
         # 创建输入框和标签
         self.create_widgets()
+        
+        # 在界面加载完成后检查更新
+        self.root.after(1000, self.check_for_updates)  # 延迟1秒检查更新
 
     def check_for_updates(self):
         """检查软件更新"""
-        update_info = self.update_checker.check_for_updates()
-        if update_info:
-            msg = f"""发现新版本！
+        # 禁用更新按钮，避免重复点击
+        if hasattr(self, 'update_btn'):
+            self.update_btn.config(state='disabled')
+            self.update_btn.config(text="检查中...")
+        
+        try:
+            update_info = self.update_checker.check_for_updates()
+            if update_info:
+                msg = f"""发现新版本！
 当前版本：{self.update_checker.current_version}
 最新版本：{update_info['version']}
 更新内容：{update_info.get('description', '无')}
 
-{'此更新为强制更新，您必须更新后才能继续使用。' if update_info.get('force_update') else '是否现在更新？'}"""
-            
-            if update_info.get('force_update'):
-                if messagebox.showwarning("强制更新", msg):
-                    self.perform_update(update_info)
+{'此更新包含重要更新，建议立即更新。' if update_info.get('force_update') else '是否现在更新？'}"""
+                
+                if update_info.get('force_update'):
+                    if messagebox.showwarning("重要更新", msg):
+                        self.perform_update(update_info)
+                    else:
+                        if messagebox.askokcancel("继续使用", "继续使用旧版本可能导致部分功能不可用，确定要继续吗？"):
+                            pass
+                        else:
+                            self.root.quit()
                 else:
-                    self.root.quit()  # 如果用户取消，直接退出程序
+                    if messagebox.askyesno("软件更新", msg):
+                        self.perform_update(update_info)
             else:
-                if messagebox.askyesno("软件更新", msg):
-                    self.perform_update(update_info)
+                # 只在手动检查时显示"已是最新版本"
+                if hasattr(self, 'update_btn'):
+                    messagebox.showinfo("检查更新", "当前已是最新版本")
+        finally:
+            # 恢复更新按钮状态
+            if hasattr(self, 'update_btn'):
+                self.update_btn.config(state='normal')
+                self.update_btn.config(text="检查更新")
 
     def perform_update(self, update_info):
         """执行更新操作"""
@@ -135,8 +154,10 @@ del "%~f0"
         style.configure('Title.TLabel', font=('微软雅黑', 14, 'bold'))
         style.configure('Field.TLabel', font=('微软雅黑', 10))
         
-        # 标题
-        title_label = ttk.Label(self.main_frame, text="卡威尔问诊信息登记表", style='Title.TLabel')
+        # 标题（不显示版本号）
+        title_label = ttk.Label(self.main_frame, 
+                               text="卡威尔问诊信息登记表", 
+                               style='Title.TLabel')
         title_label.pack(pady=(0, 15))
 
         # 基本信息框架
@@ -185,7 +206,7 @@ del "%~f0"
             font=('微软雅黑', 10),
             bg='#4CAF50',
             fg='white',
-            width=15,
+            width=12,
             height=1,
             relief=tk.RAISED
         )
@@ -199,35 +220,35 @@ del "%~f0"
             font=('微软雅黑', 10),
             bg='#2196F3',
             fg='white',
-            width=15,
+            width=12,
             height=1,
             relief=tk.RAISED
         )
         self.parse_btn.pack(side=tk.LEFT, padx=5)
 
-        # 添加清除按钮
+        # 清除按钮
         self.clear_btn = tk.Button(
             button_frame,
-            text="清除所有内容",
+            text="清除内容",
             command=self.clear_all_fields,
             font=('微软雅黑', 10),
-            bg='#f44336',  # 红色
+            bg='#f44336',
             fg='white',
-            width=15,
+            width=12,
             height=1,
             relief=tk.RAISED
         )
         self.clear_btn.pack(side=tk.LEFT, padx=5)
 
-        # 在按钮框架中添加检查更新按钮
+        # 检查更新按钮
         self.update_btn = tk.Button(
             button_frame,
             text="检查更新",
             command=self.check_for_updates,
             font=('微软雅黑', 10),
-            bg='#9C27B0',  # 紫色
+            bg='#9C27B0',
             fg='white',
-            width=15,
+            width=12,
             height=1,
             relief=tk.RAISED
         )

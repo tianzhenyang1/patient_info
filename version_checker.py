@@ -7,19 +7,20 @@ import subprocess
 
 class UpdateChecker:
     def __init__(self):
-        self.current_version = "1.0.3"  # 当前版本号
+        self.current_version = "1.0.4"  # 从1.0.3更新到1.0.4
         self.update_url = "https://raw.githubusercontent.com/tianzhenyang1/patient_info/main/version.json"
         self.download_url = "https://github.com/tianzhenyang1/patient_info/releases/download/"
         self.force_update = True  # 添加强制更新标志
 
     def check_for_updates(self):
         try:
-            print(f"当前版本: {self.current_version}")  # 添加调试信息
-            response = requests.get(self.update_url)
-            print(f"更新检查状态码: {response.status_code}")  # 添加调试信息
+            print(f"当前版本: {self.current_version}")
+            # 添加超时设置
+            response = requests.get(self.update_url, timeout=3)  # 设置3秒超时
+            print(f"更新检查状态码: {response.status_code}")
             if response.status_code == 200:
                 update_info = response.json()
-                print(f"获取到的最新版本: {update_info.get('version')}")  # 添加调试信息
+                print(f"获取到的最新版本: {update_info.get('version')}")
                 latest_version = update_info.get('version')
                 force_update = update_info.get('force_update', False)
                 
@@ -27,8 +28,11 @@ class UpdateChecker:
                     update_info['force_update'] = force_update
                     return update_info
             return None
+        except requests.Timeout:
+            print("更新检查超时")
+            return None
         except Exception as e:
-            print(f"检查更新时出错: {str(e)}")  # 添加错误信息
+            print(f"检查更新时出错: {str(e)}")
             return None
 
     def _compare_versions(self, version1, version2):
