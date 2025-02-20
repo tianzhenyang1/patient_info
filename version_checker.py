@@ -14,18 +14,21 @@ class UpdateChecker:
 
     def check_for_updates(self):
         try:
+            print(f"当前版本: {self.current_version}")  # 添加调试信息
             response = requests.get(self.update_url)
+            print(f"更新检查状态码: {response.status_code}")  # 添加调试信息
             if response.status_code == 200:
                 update_info = response.json()
+                print(f"获取到的最新版本: {update_info.get('version')}")  # 添加调试信息
                 latest_version = update_info.get('version')
-                force_update = update_info.get('force_update', False)  # 获取强制更新标志
+                force_update = update_info.get('force_update', False)
                 
                 if self._compare_versions(latest_version, self.current_version):
                     update_info['force_update'] = force_update
                     return update_info
             return None
         except Exception as e:
-            print(f"检查更新时出错: {str(e)}")
+            print(f"检查更新时出错: {str(e)}")  # 添加错误信息
             return None
 
     def _compare_versions(self, version1, version2):
