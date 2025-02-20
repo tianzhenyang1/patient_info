@@ -14,6 +14,19 @@ class PatientInfoApp:
         self.root = root
         self.root.title("卡威尔问诊信息整理系统")
         self.root.geometry("500x750")
+        
+        # 添加图标设置
+        try:
+            # 设置窗口图标
+            icon_path = 'app.ico'
+            if os.path.exists(icon_path):
+                self.root.iconbitmap(icon_path)
+            elif os.path.exists('icons/app.ico'):
+                self.root.iconbitmap('icons/app.ico')
+            elif os.path.exists('icons/healthcare.ico'):
+                self.root.iconbitmap('icons/healthcare.ico')
+        except Exception as e:
+            print(f"设置图标时出错: {str(e)}")  # 添加错误信息输出
 
         # 初始化更新检查器
         self.update_checker = UpdateChecker()
