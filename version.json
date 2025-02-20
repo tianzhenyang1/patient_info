@@ -1,6 +1,6 @@
 {
-    "version": "1.0.4",
-    "download_url": "https://github.com/tianzhenyang1/patient_info/releases/download/v1.0.4/patient_info.exe",
-    "description": "1. 更新程序图标\n2. 优化界面显示\n3. 添加强制更新功能\n4. 改进用户体验\n5. 添加窗口图标",
-    "force_update": false  // 设置为false，不强制更新
+    "version": "1.0.5",
+    "download_url": "https://github.com/tianzhenyang1/patient_info/releases/download/v1.0.5/kaweier_health.exe",
+    "description": "1. 优化界面显示\n2. 添加屏幕自适应功能\n3. 改进用户体验\n4. 修复窗口大小问题\n5. 强制更新",
+    "force_update": true
 }
